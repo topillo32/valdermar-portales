@@ -10,6 +10,7 @@ function render(){
   const x0=Math.max(0,pcx-rad),x1=Math.min(MW-1,pcx+rad),y0=Math.max(0,pcy-rad),y1=Math.min(MH-1,pcy+rad);
   // escaleras (planas)
   if(show.obj){const s=G.stairs;if(G.obj[idx(s.x,s.y)]===13)drawStairs(ctx,isoX(s.x+.5,s.y+.5),isoY(s.x+.5,s.y+.5),time)}
+  if(G.fx.length)drawBossFloorFx(ctx,time);
   // overlays planos del inspector
   if(show.grid||show.col){
     for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const i=idx(x,y),sx=isoX(x,y),sy=isoY(x,y);
@@ -20,6 +21,7 @@ function render(){
   const list=[];
   if(show.obj)for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const o=G.obj[idx(x,y)];if(o&&o!==13)list.push({k:x+y+1,kind:o<10?'wall':'obj',x,y,o})}
   for(const it of G.items)list.push({k:it.x+it.y,kind:'item',it});
+  for(const k of G.corpses)list.push({k:k.x+k.y-.6,kind:'corpse',c:k});
   for(const e of G.enemies){e.sx=isoX(e.x,e.y);e.sy=isoY(e.x,e.y);list.push({k:e.x+e.y+.01,kind:'enemy',e})}
   P.sx=isoX(P.x,P.y);P.sy=isoY(P.x,P.y);list.push({k:P.x+P.y+.01,kind:'player'});
   for(const p of G.proj)list.push({k:p.x+p.y+.02,kind:'proj',p});
@@ -57,6 +59,8 @@ function render(){
     else if(d.kind==='item'){const it=d.it,sx=isoX(it.x,it.y),sy=isoY(it.x,it.y),b=Math.sin(it.bob)*2;shadow(ctx,sx,sy,6);
       if(it.type==='gold'){ctx.fillStyle='#a8822e';ctx.beginPath();ctx.ellipse(sx,sy-4+b,6,3,0,0,7);ctx.fill();ctx.fillStyle='#e9c66a';ctx.beginPath();ctx.ellipse(sx,sy-6+b,6,3,0,0,7);ctx.fill();ctx.fillStyle='#fff6d0';ctx.fillRect(sx-2,sy-7+b,2,1)}
       else{ctx.fillStyle='#d9d2c4';ctx.fillRect(sx-1.5,sy-17+b,3,4);ctx.fillStyle='#b8283a';ctx.beginPath();ctx.arc(sx,sy-9+b,5,0,7);ctx.fill();ctx.fillStyle='rgba(255,255,255,.5)';ctx.fillRect(sx-3,sy-11+b,2,2)}}
+    else if(d.kind==='corpse')drawCorpse(ctx,d.c,time);
+    else if(d.kind==='enemy'&&d.e.t.boss)d.e.t.draw(ctx,d.e,time);
     else if(d.kind==='enemy'){const e=d.e;e.t.draw(ctx,e,time);
       if(e.hp<e.maxhp){const w=26,h=4,bx=e.sx-w/2,by=e.sy-(e.t===ETYPES.bruto?62:e.t===ETYPES.rata?22:50);ctx.fillStyle='rgba(0,0,0,.7)';ctx.fillRect(bx-1,by-1,w+2,h+2);ctx.fillStyle='#c4382d';ctx.fillRect(bx,by,w*e.hp/e.maxhp,h)}
       if(e.stun>0){const hy=e.sy-(e.t===ETYPES.bruto?66:e.t===ETYPES.rata?26:54);ctx.fillStyle='#ffe08a';
@@ -69,8 +73,10 @@ function render(){
         ctx.fillStyle='#e6ecf2';ctx.beginPath();ctx.moveTo(sx+dx*10,sy+dy*10);ctx.lineTo(sx+dx*4-dy*3,sy+dy*4+dx*3);ctx.lineTo(sx+dx*4+dy*3,sy+dy*4-dx*3);ctx.fill();
         ctx.strokeStyle='#e9dfc8';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(sx-dx*14-dy*3,sy-dy*14+dx*3);ctx.lineTo(sx-dx*11,sy-dy*11);ctx.lineTo(sx-dx*14+dy*3,sy-dy*14-dx*3);ctx.stroke()}
       else{const g=ctx.createRadialGradient(sx,sy,0,sx,sy,11);g.addColorStop(0,'rgba(255,245,210,1)');g.addColorStop(.4,'rgba(255,150,50,.9)');g.addColorStop(1,'rgba(255,70,10,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(sx,sy,11,0,7);ctx.fill()}}
+    else if(d.kind==='proj'&&d.p.kind==='fireball')drawFireball(ctx,d.p);
     else if(d.kind==='proj'){const sx=isoX(d.p.x,d.p.y),sy=isoY(d.p.x,d.p.y)-22;const g=ctx.createRadialGradient(sx,sy,0,sx,sy,9);g.addColorStop(0,'rgba(240,210,255,1)');g.addColorStop(.5,'rgba(180,90,255,.8)');g.addColorStop(1,'rgba(120,40,200,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(sx,sy,9,0,7);ctx.fill()}
   }
+  if(G.fx.length)drawBossFx(ctx,time);
   for(const p of G.parts){const sx=isoX(p.x,p.y),sy=isoY(p.x,p.y)-p.z;ctx.globalAlpha=Math.max(0,1-p.t/p.life);ctx.fillStyle=p.color;ctx.fillRect(sx-p.size/2,sy-p.size/2,p.size,p.size)}
   ctx.globalAlpha=1;
   // iluminación
@@ -84,7 +90,10 @@ function render(){
     const glows=[];
     for(const t of G.torches){if(Math.abs(t.x-P.x)>rad||Math.abs(t.y-P.y)>rad)continue;const sx=isoX(t.x,t.y)+(t.face==='L'?-HW/2:HW/2),sy=isoY(t.x,t.y)+HH/2-WH/2+HH-16;
       const f=1+.08*Math.sin(time*9+t.x)+.05*Math.sin(time*23+t.y);[lx,ly]=toL(sx,sy);hole(lx,ly,150*zoom*s*f,.95);glows.push([sx,sy,f])}
-    for(const p of G.proj){[lx,ly]=toL(isoX(p.x,p.y),isoY(p.x,p.y)-22);hole(lx,ly,60*zoom*s,.8)}
+    for(const p of G.proj){[lx,ly]=toL(isoX(p.x,p.y),isoY(p.x,p.y)-22);hole(lx,ly,(p.kind==='fireball'?90:60)*zoom*s,.85)}
+    for(const f of G.fx){[lx,ly]=toL(isoX(f.x,f.y),isoY(f.x,f.y)-10);hole(lx,ly,(f.k==='boom'?130:70)*zoom*s,.9)}
+    for(const e of G.enemies)if(e.t.boss){[lx,ly]=toL(e.sx,e.sy-50);hole(lx,ly,(e.mode==='breath'?260:190)*zoom*s,.8)}
+    for(const k of G.corpses){[lx,ly]=toL(isoX(k.x,k.y),isoY(k.x,k.y)-20);hole(lx,ly,120*zoom*s,.6)}
     for(const p of G.pproj)if(p.kind==='fire'){[lx,ly]=toL(isoX(p.x,p.y),isoY(p.x,p.y)-20);hole(lx,ly,90*zoom*s,.9)}
     {const st=G.stairs;[lx,ly]=toL(isoX(st.x+.5,st.y+.5),isoY(st.x+.5,st.y+.5));hole(lx,ly,70*zoom*s,.6)}
     ctx.globalCompositeOperation='lighter';
@@ -101,6 +110,7 @@ function render(){
   ctx.setTransform(dpr,0,0,dpr,0,0);
   const v=ctx.createRadialGradient(vw/2,vh/2,Math.min(vw,vh)*.35,vw/2,vh/2,Math.max(vw,vh)*.75);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.55)');ctx.fillStyle=v;ctx.fillRect(0,0,vw,vh);
   if(P.hp/P.maxhp<.3&&state==='play'){ctx.fillStyle=`rgba(160,20,20,${.12+.08*Math.sin(time*5)})`;ctx.fillRect(0,0,vw,vh)}
+  drawBossBar();
   drawMini();
 }
 function drawMini(){

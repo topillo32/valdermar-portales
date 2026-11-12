@@ -1,5 +1,6 @@
 // ---------- Generación de nivel ----------
 function genLevel(d,s){
+  if(isBossDepth(d))return genArena(d,s);
   rng=mulberry32(s);
   const N=MW*MH, open=new Uint8Array(N), floor=new Uint8Array(N).fill(255), obj=new Uint8Array(N), decor=new Uint8Array(N), col=new Uint8Array(N).fill(1), seen=new Uint8Array(N);
   const rooms=[], target=7+Math.min(d,5);
@@ -49,7 +50,7 @@ function genLevel(d,s){
     if(rm!==far&&R()<.5){const x=RI(rm.x+1,rm.x+rm.w-2),y=RI(rm.y+1,rm.y+rm.h-2),i=idx(x,y);if(!obj[i]&&!(x===rm.cx&&y===rm.cy)){obj[i]=11;col[i]=1;decor[i]=0}}
   }
   const th=THEMES[(d-1)%THEMES.length];
-  const L={d,theme:th,tiles:buildTileset(th),open,floor,obj,decor,col,seen,rooms,stairs,torches,start,enemies:[],items:[],proj:[],pproj:[],parts:[],texts:[]};
+  const L={d,theme:th,tiles:buildTileset(th),open,floor,obj,decor,col,seen,rooms,stairs,torches,start,enemies:[],items:[],proj:[],pproj:[],parts:[],texts:[],fx:[],corpses:[]};
   // Enemigos
   for(const rm of rooms){if(rm===start)continue;const n=RI(1,2)+Math.floor(d/2);
     for(let k=0;k<n;k++){const x=RI(rm.x,rm.x+rm.w-1)+.5,y=RI(rm.y,rm.y+rm.h-1)+.5;if(col[idx(Math.floor(x),Math.floor(y))])continue;

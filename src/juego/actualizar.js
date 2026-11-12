@@ -14,6 +14,7 @@ function update(dt){
   for(const e of G.enemies.slice()){
     e.cd-=dt;e.flash-=dt;
     if(e.kx||e.ky){moveEnt(e,e.kx*dt,e.ky*dt);const f=Math.pow(.002,dt);e.kx*=f;e.ky*=f;if(Math.abs(e.kx)<.05)e.kx=0;if(Math.abs(e.ky)<.05)e.ky=0}
+    if(e.t.boss){updateBoss(e,dt);continue}
     if(e.stun>0){e.stun-=dt;continue}
     const dx=P.x-e.x,dy=P.y-e.y,d=Math.hypot(dx,dy);
     if(!e.aggro&&d<8&&los(e,P)){e.aggro=true;addText(e.x,e.y,'!','#ffb05a',18)}
@@ -42,10 +43,15 @@ function update(dt){
   for(const e of ents){const dx=P.x-e.x,dy=P.y-e.y,d=Math.hypot(dx,dy),m=e.r+P.r;if(d<m&&d>0)moveEnt(e,-dx/d*(m-d),-dy/d*(m-d))}
   // proyectiles
   for(const p of G.proj.slice()){p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;
+    if(p.kind==='fireball'){
+      if(Math.random()<.8)G.parts.push({x:p.x,y:p.y,z:22,vx:(R()-.5)*.8,vy:(R()-.5)*.8,vz:12,life:.35,t:0,color:R()<.5?'#ffb050':'#ff5a1a',size:2+R()*2.5});
+      if(solid(p.x,p.y)||p.life<=0||Math.hypot(P.x-p.x,P.y-p.y)<.5){fireballBoom(p.x-p.vx*dt,p.y-p.vy*dt,p.dmg,p.src);G.proj.splice(G.proj.indexOf(p),1)}
+      continue}
     if(Math.random()<.5)G.parts.push({x:p.x,y:p.y,z:22,vx:0,vy:0,vz:10,life:.3,t:0,color:'#c48aff',size:2});
     if(solid(p.x,p.y)||p.life<=0){burst(p.x,p.y,'#b070ff',6,1.5);G.proj.splice(G.proj.indexOf(p),1);continue}
     if(Math.hypot(P.x-p.x,P.y-p.y)<.45){hurtPlayer(p.dmg,p.src);burst(p.x,p.y,'#b070ff',8,1.5);G.proj.splice(G.proj.indexOf(p),1)}}
   updatePlayerProj(dt);
+  if(G.fx.length)updateFx(dt);
   // objetos
   for(const it of G.items.slice()){it.bob+=dt*4;if(Math.hypot(P.x-it.x,P.y-it.y)<.65){
     if(it.type==='gear'){if(P.bag.length>=BAG_MAX){if(time-(P.fullMsg||-9)>4){P.fullMsg=time;msg('La mochila está llena. Pulsa B para vender objetos.','#ff9a8a')}continue}

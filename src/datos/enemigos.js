@@ -4,6 +4,9 @@ const ETYPES={
   esqueleto:{name:'Esqueleto',          hp:30, spd:1.9, dmg:9,  xp:14, r:.3,  wind:.4,  cdT:1.1, draw:drawSkeleton},
   cultista: {name:'Cultista',           hp:22, spd:2.1, dmg:8,  xp:18, r:.3,  ranged:true, cdT:2.2, draw:drawCultist},
   bruto:    {name:'Bruto de las fosas', hp:80, spd:1.35,dmg:18, xp:40, r:.42, wind:.6,  cdT:1.6, draw:drawBrute},
+  orco:     {name:'Orco de las brasas', hp:40, spd:2.3, dmg:12, xp:28, r:.34, wind:.45, cdT:1.2, draw:drawOrc},
+  // jefe (solo en la arena, cada 10 profundidades); su lógica está en juego/jefe.js
+  dragon:   {name:'Dragón tricéfalo',   hp:2000,spd:1.15,dmg:16, xp:900,r:1.1, boss:true, draw:drawDragon},
 };
 function pickType(d){
   const pool=[['rata',4],['esqueleto',3+d],['cultista',d>=2?2+d:0],['bruto',d>=3?d-1:0]];

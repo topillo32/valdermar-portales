@@ -8,3 +8,5 @@ function boot(data){
 window.claude?.hot?.snapshot?.(()=>state==='play'?{depth,seed,kills,P:{cls:P.cls,hp:P.hp,lvl:P.lvl,xp:P.xp,gold:P.gold,pot:P.pot,eq:P.eq,bag:P.bag,alloc:P.alloc,pts:P.pts}}:{});
 const hot=window.claude?.hot;
 hot?.ready ? hot.ready(boot) : boot(hot?.data ?? {});
+// Solo en desarrollo (npm run dev): acceso desde la consola para probar, p. ej. __dev.ir(10) para ir a la arena del dragón.
+if(import.meta.env?.DEV)window.__dev={get G(){return G},get P(){return P},ir(d){depth=d-1;descend()},paso(s){for(let t=0;t<s;t+=1/60)update(1/60);render()}};
