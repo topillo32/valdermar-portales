@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Partida guardada: solo su dueño la lee y la escribe.
+    match /saves/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow write: if request.auth != null && request.auth.uid == uid
+                   && request.resource.size() < 60;
+    }
+
+    // Récords: todos leen; cada jugador escribe solo los suyos y con datos válidos.
+    match /scores/{scoreId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid','name','cls','depth','lvl','kills','gold','at'])
+        && request.resource.data.name is string && request.resource.data.name.size() <= 24
+        && request.resource.data.depth is int && request.resource.data.depth >= 1 && request.resource.data.depth <= 999
+        && request.resource.data.lvl is int && request.resource.data.kills is int && request.resource.data.gold is int
+        && request.resource.data.at == request.time;
+      allow update, delete: if false;
+    }
+
+    // Perfil público mínimo (nombre visible en récords).
+    match /profiles/{uid} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name'])
+        && request.resource.data.name is string && request.resource.data.name.size() <= 24;
+    }
+  }
+}

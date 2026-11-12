@@ -1,0 +1,21 @@
+# Sitio estático: Netlify publica la carpeta "sitio" tal cual (sin compilación).
+[build]
+  publish = "sitio"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # Necesario para que la ventana de "Continuar con Google" pueda avisar a la página
+    Cross-Origin-Opener-Policy = "same-origin-allow-popups"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "no-cache"

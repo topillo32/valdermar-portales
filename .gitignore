@@ -1,0 +1,6 @@
+.env*
+.netlify/
+.vercel/
+node_modules/
+.firebase/
+*.log
