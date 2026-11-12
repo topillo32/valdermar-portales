@@ -30,9 +30,9 @@ const nice = e => ERRORS[e && e.code] || (e && e.message) || 'Algo salió mal.';
 
 async function boot() {
   const [appM, authM, fsM] = await Promise.all([
-    import(`https://www.gstatic.com/firebasejs/${VER}/firebase-app.js`),
-    import(`https://www.gstatic.com/firebasejs/${VER}/firebase-auth.js`),
-    import(`https://www.gstatic.com/firebasejs/${VER}/firebase-firestore.js`),
+    import(/* @vite-ignore */ `https://www.gstatic.com/firebasejs/${VER}/firebase-app.js`),
+    import(/* @vite-ignore */ `https://www.gstatic.com/firebasejs/${VER}/firebase-auth.js`),
+    import(/* @vite-ignore */ `https://www.gstatic.com/firebasejs/${VER}/firebase-firestore.js`),
   ]);
   const app = appM.initializeApp(firebaseConfig);
   const auth = authM.getAuth(app);

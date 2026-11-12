@@ -1,6 +1,7 @@
-# Sitio estático: Netlify publica la carpeta "sitio" tal cual (sin compilación).
+# Netlify compila con Vite y publica la carpeta "dist".
 [build]
-  publish = "sitio"
+  command = "npm run build"
+  publish = "dist"
 
 [[headers]]
   for = "/*"

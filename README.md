@@ -1,16 +1,37 @@
 # Valdemar y sus portales
 
-Juego web en HTML + JavaScript (un solo archivo), con inicio de sesión, partida guardada y récords en Firebase.
+Rol y acción isométrica en el navegador (Canvas 2D + JavaScript), con inicio de sesión, partida guardada y récords en Firebase. Se desarrolla y compila con [Vite](https://vite.dev).
+
+## Comandos
+    npm install       # una vez
+    npm run dev       # servidor de desarrollo con recarga automática (http://localhost:5173)
+    npm run build     # versión optimizada para publicar, en dist/
+    npm run preview   # probar dist/ en local
 
 ## Estructura
-- `criptas.html`: el juego completo (copia de trabajo)
-- `sitio/`: carpeta que se publica (Netlify / Vercel); `sitio/index.html` es el juego
-- `firebase.js`: conexión con Firebase (la configuración web es pública; la seguridad la ponen las reglas)
-- `firestore.rules`, `firestore.indexes.json`, `firebase.json`, `.firebaserc`: configuración de Firebase
-- `netlify.toml`: Netlify publica la carpeta `sitio`
-- `*.png`, `logo.webp`: personajes y logo
+```
+index.html            marcado del juego (HUD, menús, paneles)
+public/               imágenes que se sirven tal cual (personajes, logo)
+src/
+  main.js             punto de entrada: estilos + juego + Firebase
+  estilos.css         todos los estilos
+  orden.json          orden en que se unen los archivos del juego
+  motor/nucleo.js     constantes, lienzos, tamaño de pantalla, azar y utilidades
+  datos/              temas (paletas), clases y atributos, atlas de sprites, tipos de enemigo
+  objetos/objetos.js  generación de objetos, afijos y estadísticas
+  render/             tileset, decorado, iconos, personajes y el dibujado de cada fotograma
+  mundo/              generación de niveles, colisiones y línea de visión
+  juego/              estado, acciones, entrada (teclado/táctil), actualización y bucle
+  ui/                 HUD, inspector, menús/cuenta/récords, equipo y selección de clase
+  servicios/          guardado (Firebase o navegador) y sonido
+  arranque.js         arranque del juego
+  firebase.js         conexión con Firebase (la configuración web es pública; la seguridad la ponen las reglas)
+firestore.rules, firestore.indexes.json, firebase.json, .firebaserc   configuración de Firebase
+netlify.toml, vercel.json   publicación (compilan con `npm run build` y publican `dist/`)
+```
 
-## Jugar en local
-Abre `sitio/index.html` con un servidor estático, por ejemplo:
+## Cómo están unidos los archivos (fase 1)
+Los archivos de `src/` (salvo `main.js` y `firebase.js`) comparten las mismas variables globales del juego (`P`, `G`, `state`, `cam`…), igual que cuando todo estaba en un solo HTML. Un pequeño plugin en `vite.config.js` los une en un solo módulo siguiendo `src/orden.json`, con mapas de código para que los errores del navegador muestren el archivo y la línea reales.
 
-    npx serve sitio
+- Para añadir un archivo nuevo, créalo en `src/` y agrégalo a `src/orden.json` en el lugar que le corresponda (después de lo que use al cargarse).
+- El siguiente paso (fase 2) sería convertirlos en módulos con `import`/`export` reales y, si hace falta rendimiento, pasar el dibujado a WebGL con PixiJS.

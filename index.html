@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Valdemar y sus portales</title>
+<meta name="description" content="Rol y acción isométrica: desciende por los portales de Valdemar, encuentra botín y llega más hondo que nadie.">
+<meta property="og:title" content="Valdemar y sus portales">
+<meta property="og:image" content="logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700&display=swap">
+</head>
+<body>
+
+<canvas id="game" aria-label="Mazmorra isométrica"></canvas>
+
+<div class="hud-tl" id="hud">
+  <div class="hero-line"><span id="heroName">Aldric</span><small id="lvl">Nivel 1</small></div>
+  <div class="bar hp"><i id="hpFill"></i><span id="hpTxt">100 / 100</span></div>
+  <div class="bar xp" title="Experiencia"><i id="xpFill"></i></div>
+  <div class="inv"><span class="g">Oro <b id="gold">0</b></span><span>Pociones <b id="pots">2</b></span><span>Daño <b id="atk">10–16</b></span></div>
+</div>
+
+<div class="hud-tr">
+  <div class="tbar">
+    <button id="btnMenu">Menú (Esc)</button>
+    <button id="btnEquip" aria-pressed="false">Equipo (B)</button>
+    <button id="btnMap" aria-pressed="false">Mapa (M)</button>
+    <button id="btnInsp" aria-pressed="false">Inspector (I)</button>
+    <button id="btnMute" aria-pressed="false">Silenciar</button>
+  </div>
+  <canvas id="mini" width="300" height="192"></canvas>
+  <div class="zone" id="zone">Profundidad 1</div>
+</div>
+
+<div id="log" aria-live="polite"></div>
+<div id="hint" hidden></div>
+
+<div id="touch">
+  <div id="stick" hidden><i></i></div>
+  <div class="tbtns">
+    <button id="tPot">Poción</button>
+    <button id="tAtk">Atacar</button>
+    <button id="tUse">Usar</button>
+  </div>
+</div>
+
+<aside id="insp" hidden aria-label="Inspector del motor">
+  <h2>Inspector del motor</h2>
+  <p>Como en los mapas de GBA que extrajimos: cada nivel es una cuadrícula de índices que apuntan a un tileset, coloreado con una paleta y repartido en capas.</p>
+  <div>
+    <h3>Capas</h3>
+    <label><input type="checkbox" id="lyFloor" checked> Capa 0 · Suelo</label>
+    <label><input type="checkbox" id="lyObj" checked> Capa 1 · Muros y objetos</label>
+    <label><input type="checkbox" id="lyDecor" checked> Capa 2 · Decoración</label>
+    <label><input type="checkbox" id="lyCol"> Colisión</label>
+    <label><input type="checkbox" id="lyGrid"> Rejilla isométrica</label>
+    <label><input type="checkbox" id="lyLight" checked> Iluminación</label>
+  </div>
+  <div>
+    <h3 id="cellTitle">Casilla bajo el cursor</h3>
+    <dl class="cell" id="cellInfo"></dl>
+  </div>
+  <div>
+    <h3>Tileset generado</h3>
+    <div class="tiles" id="tileList"></div>
+  </div>
+  <div>
+    <h3>Paleta del nivel</h3>
+    <div class="pal" id="palList"></div>
+  </div>
+  <p>El suelo y la decoración se dibujan una sola vez en una imagen grande. Los muros, objetos y personajes se ordenan cada fotograma por profundidad (x + y), para que lo de delante tape a lo de detrás.</p>
+</aside>
+
+<div class="overlay" id="title">
+  <div class="card">
+    <div class="acct" id="acct"><span id="acctTxt">Jugando sin cuenta · guardado en este navegador</span><button class="linkbtn" id="loginBtn" type="button">Iniciar sesión</button></div>
+    <h1 class="logo"><img src="logo.webp" width="1200" height="670" alt="Valdemar y sus portales"></h1>
+    <p class="sub">Bajo la abadía en ruinas de Valdemar, los portales se abren hacia criptas que nadie ha cartografiado. Cruza piso a piso, abre los cofres y no dejes que la oscuridad te alcance.</p>
+    <div class="classes" id="classes" role="radiogroup" aria-label="Elige tu clase"></div>
+    <div class="cls-info" id="clsInfo"></div>
+    <dl class="keys">
+      <dt>1 – 5</dt><dd>Elegir clase en esta pantalla</dd>
+      <dt>WASD / flechas</dt><dd>Moverse</dd>
+      <dt>Espacio o clic</dt><dd>Atacar (el clic apunta hacia el cursor)</dd>
+      <dt>Q</dt><dd>Beber poción</dd>
+      <dt>E</dt><dd>Abrir cofres y bajar escaleras</dd>
+      <dt>B</dt><dd>Equipo: armas, armaduras y atributos</dd>
+      <dt>Esc</dt><dd>Menú: guardar, reiniciar o abandonar</dd>
+      <dt>M · I</dt><dd>Mapa · Inspector del motor</dd>
+    </dl>
+    <div class="menu-row">
+      <button class="cta" id="contBtn" hidden>Continuar partida</button>
+      <button class="cta" id="startBtn">Nueva partida</button>
+    </div>
+    <p class="note" id="contInfo"></p>
+    <div class="menu-row"><button class="btn2" id="scoresBtn" type="button">Récords</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="equip" hidden>
+  <div class="card">
+    <h1>Equipo</h1>
+    <div class="eq-grid">
+      <div class="eq-box">
+        <h3 id="eqHead">Personaje</h3>
+        <div class="attrs" id="attrs"></div>
+        <div class="derived" id="derived"></div>
+        <h3>Equipado</h3>
+        <div class="slots" id="slots"></div>
+      </div>
+      <div class="eq-box">
+        <h3 id="bagHead">Mochila</h3>
+        <div class="bag" id="bag"></div>
+        <div class="detail" id="detail"></div>
+      </div>
+    </div>
+    <div class="eq-foot"><span>Toca un objeto para ver sus estadísticas y compararlo con lo que llevas.</span><button class="cta" id="eqClose">Volver al juego (B)</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="pause" hidden>
+  <div class="card">
+    <h1>Pausa</h1>
+    <p class="sub" id="pauseSub"></p>
+    <div class="menu-col" id="pauseMain">
+      <button class="cta" id="pResume">Continuar</button>
+      <button class="btn2" id="pSave">Guardar partida</button>
+      <button class="btn2" id="pSaveQuit">Guardar y salir al menú</button>
+      <button class="btn2" id="pRestart">Reiniciar desde el piso 1</button>
+      <button class="btn2 danger" id="pQuit">Abandonar partida</button>
+    </div>
+    <div class="menu-col" id="pauseConfirm" hidden>
+      <p class="sub" id="confirmTxt"></p>
+      <button class="btn2 danger" id="cYes">Sí</button>
+      <button class="btn2" id="cNo">No, volver</button>
+    </div>
+    <p class="note" id="pauseNote" aria-live="polite"></p>
+  </div>
+</div>
+
+<div class="overlay" id="auth" hidden>
+  <div class="card">
+    <h1>Tu cuenta</h1>
+    <p class="sub">Con una cuenta tu partida se guarda en la nube y tus récords aparecen en la tabla.</p>
+    <div class="tabs2" role="tablist">
+      <button role="tab" id="tabIn" aria-selected="true">Entrar</button>
+      <button role="tab" id="tabUp" aria-selected="false">Crear cuenta</button>
+    </div>
+    <form class="form" id="authForm" novalidate>
+      <label id="nameRow" hidden>Nombre de aventurero<input id="aName" maxlength="24" autocomplete="nickname"></label>
+      <label>Correo<input id="aEmail" type="email" autocomplete="email" required></label>
+      <label>Contraseña<input id="aPass" type="password" autocomplete="current-password" minlength="6" required></label>
+      <button class="cta" id="aSubmit" type="submit">Entrar</button>
+      <button class="linkbtn" id="aReset" type="button">¿Olvidaste tu contraseña?</button>
+      <div class="sep">o</div>
+      <button class="gbtn" id="aGoogle" type="button"><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.2l7.9 6.2C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-16.6z"/><path fill="#FBBC05" d="M10.6 28.6A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.6l-7.9-6.2A24 24 0 0 0 0 24c0 3.9.9 7.5 2.7 10.8l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.2-8.5 2.2-6.2 0-11.5-4.1-13.4-9.9l-7.9 6.2C6.6 42.6 14.6 48 24 48z"/></svg>Continuar con Google</button>
+    </form>
+    <p class="note" id="authNote" aria-live="polite"></p>
+    <div class="menu-row"><button class="btn2" id="authClose" type="button">Volver</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="scoresBox" hidden>
+  <div class="card">
+    <h1>Récords</h1>
+    <p class="sub" id="scoresSub">Las 10 expediciones que llegaron más hondo.</p>
+    <div class="scroll-x"><table class="scores"><thead><tr><th>#</th><th>Aventurero</th><th>Clase</th><th class="n">Piso</th><th class="n">Nivel</th><th class="n">Bajas</th></tr></thead><tbody id="scoresBody"></tbody></table></div>
+    <p class="note" id="scoresNote"></p>
+    <div class="menu-row"><button class="btn2" id="scoresClose" type="button">Volver</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="dead" hidden>
+  <div class="card">
+    <h1>Has caído</h1>
+    <p class="sub" id="deadSub"></p>
+    <div class="stats" id="deadStats"></div>
+    <p class="note" id="deadNote"></p>
+    <div class="menu-row">
+      <button class="cta" id="againBtn">Elegir clase y volver</button>
+      <button class="btn2" id="deadScores" type="button">Récords</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

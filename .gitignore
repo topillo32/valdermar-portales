@@ -1,6 +1,7 @@
+node_modules/
+dist/
 .env*
 .netlify/
 .vercel/
-node_modules/
 .firebase/
 *.log
