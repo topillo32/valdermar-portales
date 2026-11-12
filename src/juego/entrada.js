@@ -43,3 +43,5 @@ cv.addEventListener('pointerleave',e=>{if(e.pointerType!=='touch')mouse.in=false
 const tap=(id,fn)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();document.body.classList.add('touch');fn()})};
 tap('tAtk',()=>playerAttack());tap('tPot',drinkPotion);tap('tUse',interact);
 window.addEventListener('touchstart',()=>document.body.classList.add('touch'),{once:true,passive:true});
+// Teléfonos y tabletas: mostrar los controles táctiles desde el principio.
+if(matchMedia('(hover:none) and (pointer:coarse)').matches)document.body.classList.add('touch');

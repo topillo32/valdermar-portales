@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#09080c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Valdemar y sus portales</title>
 <meta name="description" content="Rol y acción isométrica: desciende por los portales de Valdemar, encuentra botín y llega más hondo que nadie.">
 <meta property="og:title" content="Valdemar y sus portales">
@@ -24,10 +28,10 @@
 
 <div class="hud-tr">
   <div class="tbar">
-    <button id="btnMenu">Menú (Esc)</button>
-    <button id="btnEquip" aria-pressed="false">Equipo (B)</button>
-    <button id="btnMap" aria-pressed="false">Mapa (M)</button>
-    <button id="btnInsp" aria-pressed="false">Inspector (I)</button>
+    <button id="btnMenu">Menú<kbd> (Esc)</kbd></button>
+    <button id="btnEquip" aria-pressed="false">Equipo<kbd> (B)</kbd></button>
+    <button id="btnMap" aria-pressed="false">Mapa<kbd> (M)</kbd></button>
+    <button id="btnInsp" aria-pressed="false">Inspector<kbd> (I)</kbd></button>
     <button id="btnMute" aria-pressed="false">Silenciar</button>
   </div>
   <canvas id="mini" width="300" height="192"></canvas>
@@ -80,7 +84,14 @@
     <p class="sub">Bajo la abadía en ruinas de Valdemar, los portales se abren hacia criptas que nadie ha cartografiado. Cruza piso a piso, abre los cofres y no dejes que la oscuridad te alcance.</p>
     <div class="classes" id="classes" role="radiogroup" aria-label="Elige tu clase"></div>
     <div class="cls-info" id="clsInfo"></div>
-    <dl class="keys">
+    <dl class="keys keys-touch">
+      <dt>Arrastrar</dt><dd>Toca y arrastra en la mitad izquierda para moverte</dd>
+      <dt>Atacar</dt><dd>Golpea hacia donde miras</dd>
+      <dt>Poción</dt><dd>Beber una poción</dd>
+      <dt>Usar</dt><dd>Abrir cofres y bajar escaleras</dd>
+      <dt>Equipo · Menú</dt><dd>Botones de arriba a la derecha</dd>
+    </dl>
+    <dl class="keys keys-pc">
       <dt>1 – 5</dt><dd>Elegir clase en esta pantalla</dd>
       <dt>WASD / flechas</dt><dd>Moverse</dd>
       <dt>Espacio o clic</dt><dd>Atacar (el clic apunta hacia el cursor)</dd>
@@ -116,7 +127,7 @@
         <div class="detail" id="detail"></div>
       </div>
     </div>
-    <div class="eq-foot"><span>Toca un objeto para ver sus estadísticas y compararlo con lo que llevas.</span><button class="cta" id="eqClose">Volver al juego (B)</button></div>
+    <div class="eq-foot"><span>Toca un objeto para ver sus estadísticas y compararlo con lo que llevas.</span><button class="cta" id="eqClose">Volver al juego<kbd> (B)</kbd></button></div>
   </div>
 </div>
 
