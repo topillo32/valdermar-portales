@@ -4,7 +4,7 @@ let eqSel=null; // {from:'bag'|'eq', id}
 function itemScore(it){if(!it)return 0;let s=0;if(it.min)s+=(it.min+it.max)/2*(it.spd||1)*3;if(it.def)s+=it.def*2;for(const a of it.aff)s+=a.k==='vida'?a.v*.5:a.k==='robo'?a.v*6:a.v*2;return s}
 function isUpgrade(it){return canUse(it,P.cls)&&itemScore(it)>itemScore(P.eq[it.slot])*1.05}
 function toggleEquip(){
-  if(state==='play'){state='inv';for(const k in keys)keys[k]=false;stick.id=null;$('stick').hidden=true;$('equip').hidden=false;eqSel=null;renderEquip();$('btnEquip').setAttribute('aria-pressed','true');setTimeout(()=>$('eqClose').focus(),30)}
+  if(state==='play'){state='inv';for(const k in keys)keys[k]=false;stick.id=null;$('stick').hidden=true;$('equip').hidden=false;eqSel=null;eqTab(P.pts?'char':'bag');renderEquip();$('btnEquip').setAttribute('aria-pressed','true');setTimeout(()=>$('eqClose').focus(),30)}
   else if(state==='inv'){state='play';$('equip').hidden=true;$('btnEquip').setAttribute('aria-pressed','false');updHud();cv.focus()}
 }
 function itemCell(it,from,extra){
@@ -51,9 +51,13 @@ function renderEquip(){
   const bag=$('bag');bag.innerHTML='';
   for(let i=0;i<BAG_MAX;i++){const it=P.bag[i];bag.appendChild(itemCell(it,'bag',it&&isUpgrade(it)?'▲':''))}
   // detalle
+  $('eqTabChar').textContent=P.pts?'Personaje ●':'Personaje';
   const det=$('detail');det.innerHTML='';
   const it=eqSel&&(eqSel.from==='bag'?P.bag.find(x=>x.id===eqSel.id):Object.values(P.eq).find(x=>x&&x.id===eqSel.id));
+  det.classList.toggle('open',!!it);
   if(!it){const p=document.createElement('p');p.className='meta';p.textContent='Los objetos caen de los enemigos y de los cofres. Cuanto más bajas, mayor es su nivel. Los marcados con ▲ son mejores que lo que llevas.';det.appendChild(p);return}
+  const x=document.createElement('button');x.type='button';x.className='det-x';x.textContent='✕';x.setAttribute('aria-label','Cerrar detalle');
+  x.addEventListener('click',()=>{eqSel=null;renderEquip()});det.appendChild(x);
   const h=document.createElement('h4');h.className='c'+it.rar;h.textContent=it.name;
   const m=document.createElement('div');m.className='meta';m.textContent=RARITY[it.rar]+' · '+ITYPES[it.type].label+(it.rar===3?' ('+it.base+')':'')+' · Nivel de objeto '+it.ilvl;
   det.append(h,m);
@@ -81,3 +85,8 @@ function renderEquip(){
 }
 $('btnEquip').addEventListener('click',()=>{if(state==='play'||state==='inv')toggleEquip()});
 $('eqClose').addEventListener('click',toggleEquip);
+$('eqX').addEventListener('click',toggleEquip);
+// Pestañas del equipo (solo se ven en pantallas pequeñas)
+function eqTab(t){$('equip').dataset.tab=t;$('eqTabBag').setAttribute('aria-selected',t==='bag');$('eqTabChar').setAttribute('aria-selected',t==='char');$('equip').scrollTop=0}
+$('eqTabBag').addEventListener('click',()=>eqTab('bag'));
+$('eqTabChar').addEventListener('click',()=>eqTab('char'));

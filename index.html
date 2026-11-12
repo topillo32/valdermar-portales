@@ -110,18 +110,25 @@
   </div>
 </div>
 
-<div class="overlay" id="equip" hidden>
+<div class="overlay" id="equip" data-tab="bag" hidden>
   <div class="card">
     <h1>Equipo</h1>
+    <div class="eq-top">
+      <div class="eq-tabs" role="tablist" aria-label="Secciones del equipo">
+        <button type="button" role="tab" id="eqTabBag" aria-selected="true">Mochila</button>
+        <button type="button" role="tab" id="eqTabChar" aria-selected="false">Personaje</button>
+      </div>
+      <button type="button" class="eq-x" id="eqX" aria-label="Volver al juego">Volver</button>
+    </div>
     <div class="eq-grid">
-      <div class="eq-box">
+      <div class="eq-box eq-char">
         <h3 id="eqHead">Personaje</h3>
         <div class="attrs" id="attrs"></div>
         <div class="derived" id="derived"></div>
         <h3>Equipado</h3>
         <div class="slots" id="slots"></div>
       </div>
-      <div class="eq-box">
+      <div class="eq-box eq-bag">
         <h3 id="bagHead">Mochila</h3>
         <div class="bag" id="bag"></div>
         <div class="detail" id="detail"></div>
