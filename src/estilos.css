@@ -11,6 +11,8 @@ html,body{height:100%}
 body{margin:0;background:var(--ink);color:var(--bone);font-family:var(--ui);font-size:15px;overflow:hidden;-webkit-user-select:none;user-select:none;touch-action:none}
 #game{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
 button{font:inherit;color:inherit}
+button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button kbd{font:inherit}
 button:focus-visible,input:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
 
 /* HUD */
@@ -172,3 +174,73 @@ body.touch #insp{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 110px);m
 .scores tr.me td{color:var(--gold)}
 .scroll-x{overflow-x:auto}
 #auth,#scoresBox{z-index:20;background:radial-gradient(ellipse at 50% 35%,#1d1410,#060508 75%)}
+
+/* ---------- Móvil y táctil ---------- */
+/* Con el cuerpo en touch-action:none, las pantallas y paneles con scroll tienen que permitir el desplazamiento con el dedo. */
+.overlay,#insp{touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.scroll-x{touch-action:pan-x pan-y}
+.overlay{height:100dvh;padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}
+.keys-touch{display:none}
+body.touch .keys-touch{display:grid}
+body:has(.overlay:not([hidden])) #touch{display:none}
+body.touch .keys-pc{display:none}
+body.touch button kbd{display:none}
+body.touch .tbar button{min-height:36px;padding:6px 12px}
+body.touch #game{cursor:default}
+.tbtns button{touch-action:none;-webkit-touch-callout:none}
+.tbtns button:active{background:rgba(229,138,60,.25)}
+
+/* Teléfono en vertical */
+@media (max-width:600px){
+  .hud-tl{gap:4px}
+  .hero-line{font-size:16px}
+  .inv{gap:10px;font-size:13px}
+  .hud-tr{left:max(16px,env(safe-area-inset-left,0px));top:calc(env(safe-area-inset-top,0px) + 86px);justify-items:end}
+  .tbar{flex-wrap:nowrap;gap:5px;width:100%;justify-content:flex-end}
+  .tbar button{white-space:nowrap}
+  body.touch .tbar button{padding:6px 9px;font-size:13px}
+  body.touch #insp{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 180px);max-height:40%}
+  #log{max-width:calc(100vw - 150px)}
+  #log div{font-size:13px}
+  #hint{bottom:calc(env(safe-area-inset-bottom,0px) + 175px);max-width:calc(100vw - 32px);text-align:center}
+  .card{padding-block:16px;gap:14px}
+  .card .sub{font-size:15px}
+  .cls{padding:6px 2px 8px}
+  .cls b{font-size:15px}
+  .keys{font-size:13px;gap:5px 10px}
+  .keys dt{white-space:normal}
+  .cta{padding:12px 22px;font-size:19px}
+  .btn2{padding:10px 16px;font-size:17px}
+  .attrs button{width:34px;height:34px}
+  .slots{gap:6px}
+  .bag{grid-template-columns:repeat(auto-fill,minmax(52px,1fr))}
+  .eq-foot{justify-content:center;text-align:center}
+  .eq-foot .cta{width:100%}
+  .scores{font-size:13px}
+  .scores th,.scores td{padding:6px 5px}
+}
+@media (max-width:360px){
+  body.touch .tbar button{padding:6px 7px;font-size:12px}
+  .classes{gap:6px}
+}
+
+/* Teléfono en horizontal (poca altura) */
+@media (max-height:500px) and (orientation:landscape){
+  .hud-tl{width:min(260px,40vw);gap:3px}
+  .hero-line{font-size:15px}
+  .bar{height:12px}
+  .inv{font-size:12px;gap:10px}
+  .hud-tr{gap:5px}
+  #mini{width:110px;height:70px}
+  #mini.big{width:min(360px,50vw);height:min(230px,60vh)}
+  .zone{font-size:12px}
+  #insp,body.touch #insp{top:calc(env(safe-area-inset-top,0px) + 120px);bottom:auto;max-height:calc(100% - 140px);width:min(300px,45vw)}
+  body.touch #log{bottom:calc(env(safe-area-inset-bottom,0px) + 10px);max-width:40vw}
+  #hint{bottom:calc(env(safe-area-inset-bottom,0px) + 12px)}
+  .tbtns{bottom:calc(env(safe-area-inset-bottom,0px) + 10px);gap:8px}
+  .tbtns button{width:52px;height:52px}
+  .tbtns #tAtk{width:74px;height:74px}
+  .card{padding-block:12px;gap:10px}
+  .card h1{font-size:clamp(30px,7vh,48px)}
+  .card h1.logo{width:min(380px,100%)}
+}

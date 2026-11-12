@@ -7,7 +7,7 @@ function updHud(){
   $('hpFill').style.width=(100*Math.max(0,P.hp)/P.maxhp)+'%';
   $('hpTxt').textContent=Math.max(0,Math.ceil(P.hp))+' / '+P.maxhp;
   $('xpFill').style.width=(100*P.xp/xpNext(P.lvl))+'%';
-  $('lvl').textContent='Nivel '+P.lvl+(P.pts?' · +'+P.pts+' pts':'');$('btnEquip').textContent=P.pts?'Equipo (B) ●':'Equipo (B)';$('heroName').textContent=CLS().name+' · '+CLS().title;
+  $('lvl').textContent='Nivel '+P.lvl+(P.pts?' · +'+P.pts+' pts':'');$('btnEquip').innerHTML='Equipo<kbd> (B)</kbd>'+(P.pts?' ●':'');$('heroName').textContent=CLS().name+' · '+CLS().title;
   $('gold').textContent=P.gold; $('pots').textContent=P.pot; $('atk').textContent=P.atkMin+'–'+P.atkMax;
   $('zone').textContent='Profundidad '+depth+' · '+G.theme.name;
 }

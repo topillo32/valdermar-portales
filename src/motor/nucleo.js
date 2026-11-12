@@ -8,7 +8,8 @@ function resize(){
   dpr=Math.min(window.devicePixelRatio||1,2); vw=window.innerWidth; vh=window.innerHeight;
   cv.width=Math.round(vw*dpr); cv.height=Math.round(vh*dpr);
   lightCv.width=Math.ceil(vw/2); lightCv.height=Math.ceil(vh/2);
-  zoom = vw<700 ? 0.8 : 1;
+  // Pantallas pequeñas (o teléfono en horizontal): alejar un poco la cámara para ver más mazmorra.
+  zoom = Math.min(vw,vh)<500 ? 0.72 : vw<700 ? 0.8 : 1;
 }
 window.addEventListener('resize',resize); resize();
 
