@@ -11,7 +11,7 @@ Rol y acción isométrica en el navegador (Canvas 2D + JavaScript), con inicio d
 ## Estructura
 ```
 index.html            marcado del juego (HUD, menús, paneles)
-public/               imágenes que se sirven tal cual (personajes, logo)
+public/               imágenes que se sirven tal cual (personajes, dragón, logo)
 src/
   main.js             punto de entrada: estilos + juego + Firebase
   estilos.css         todos los estilos
@@ -21,7 +21,8 @@ src/
   objetos/objetos.js  generación de objetos, afijos y estadísticas
   render/             tileset, decorado, iconos, personajes y el dibujado de cada fotograma
   mundo/              generación de niveles, colisiones y línea de visión
-  juego/              estado, acciones, entrada (teclado/táctil), actualización y bucle
+  juego/              estado, acciones, entrada (teclado/táctil), actualización y bucle;
+                      jefe.js: arena y Dragón tricéfalo (cada 10 profundidades)
   ui/                 HUD, inspector, menús/cuenta/récords, equipo y selección de clase
   servicios/          guardado (Firebase o navegador) y sonido
   arranque.js         arranque del juego
@@ -35,3 +36,6 @@ Los archivos de `src/` (salvo `main.js` y `firebase.js`) comparten las mismas va
 
 - Para añadir un archivo nuevo, créalo en `src/` y agrégalo a `src/orden.json` en el lugar que le corresponda (después de lo que use al cargarse).
 - El siguiente paso (fase 2) sería convertirlos en módulos con `import`/`export` reales y, si hace falta rendimiento, pasar el dibujado a WebGL con PixiJS.
+
+## Probar el jefe en desarrollo
+Con `npm run dev`, en la consola del navegador: `__dev.ir(10)` te lleva a la arena del dragón (solo existe en desarrollo, no en la versión publicada).

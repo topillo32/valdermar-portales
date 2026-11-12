@@ -42,11 +42,13 @@ function updatePlayerProj(dt){
     if(dead)G.pproj.splice(G.pproj.indexOf(p),1)}
 }
 function hurtEnemy(e,dmg,nx,ny,crit,stun){
-  e.hp-=dmg;e.flash=.12;e.kx=nx*5;e.ky=ny*5;e.aggro=true;e.wind=Math.max(0,e.wind-.15);
-  if(stun){e.stun=Math.max(e.stun||0,stun);e.wind=0}
+  const boss=e.t.boss,kb=boss?0:5;
+  e.hp-=dmg;e.flash=.12;e.kx=nx*kb;e.ky=ny*kb;e.aggro=true;if(!boss)e.wind=Math.max(0,e.wind-.15);
+  if(stun&&!boss){e.stun=Math.max(e.stun||0,stun);e.wind=0}
   if(P.stats.steal&&P.hp<P.maxhp){P.hp=Math.min(P.maxhp,P.hp+dmg*P.stats.steal)}
   addText(e.x,e.y,(crit?'¡':'')+dmg+(crit?'!':''),crit?'#ffd36a':'#f3ead8',crit?20:15);
   burst(e.x,e.y,e.t===ETYPES.esqueleto?'#e6dcc4':'#8f1f18',8,2);sfx('hit');shake=Math.max(shake,crit?5:2);
+  if(e.hp<=0&&boss){bossDefeated(e);return}
   if(e.hp<=0){
     G.enemies.splice(G.enemies.indexOf(e),1);kills++;sfx('die');burst(e.x,e.y,e.t===ETYPES.esqueleto?'#e6dcc4':'#6e1812',18,3);
     gainXp(Math.round(e.t.xp*(1+.2*(depth-1))*P.stats.xp));
@@ -88,13 +90,15 @@ function interact(){
 function descend(){
   depth++;seed=(Math.random()*1e9)|0;sfx('stairs');
   G=genLevel(depth,seed);placePlayer();P.hp=Math.min(P.maxhp,P.hp+Math.round(P.maxhp*.25));
-  msg('Desciendes a la profundidad '+depth+': '+G.theme.name+'.','#e58a3c');refreshInspector();updHud();
+  msg('Desciendes a la profundidad '+depth+': '+G.theme.name+'.','#e58a3c');
+  if(G.bossLevel){msg('Una arena de piedra caliente. En el centro duerme un dragón de tres cabezas...','#ff7a3c');sfx('roar');shake=8}
+  else if(isBossDepth(depth+1))msg('Huele a azufre. Algo enorme respira bajo tus pies.','#ff9a8a');refreshInspector();updHud();
   saveGame().then(w=>msg('Partida guardada '+(w==='nube'?'en la nube':'en este navegador')+'.','#a39aa9')).catch(e=>msg('No se pudo guardar: '+e.message,'#ff9a8a'));
 }
 function placePlayer(){P.x=G.start.cx+.5;P.y=G.start.cy+.5;cam.x=isoX(P.x,P.y);cam.y=isoY(P.x,P.y)}
 function die(src){
   state='dead';P.deadAt=time;
-  const who={'Rata de cripta':'una rata de cripta','Esqueleto':'un esqueleto','Cultista':'un cultista','Bruto de las fosas':'un bruto de las fosas'}[src&&src.t&&src.t.name];
+  const who={'Rata de cripta':'una rata de cripta','Esqueleto':'un esqueleto','Cultista':'un cultista','Bruto de las fosas':'un bruto de las fosas','Orco de las brasas':'un orco de las brasas','Dragón tricéfalo':'el Dragón tricéfalo'}[src&&src.t&&src.t.name];
   $('deadSub').textContent=(who?'Te ha derrotado '+who:'La oscuridad te ha alcanzado')+' en la profundidad '+depth+'.';
   $('deadStats').innerHTML='';
   for(const[l,v]of[['Clase',CLS().title],['Profundidad',depth],['Nivel',P.lvl],['Enemigos',kills],['Oro',P.gold]]){const d=document.createElement('div');d.innerHTML='<b></b><span></span>';d.querySelector('b').textContent=v;d.querySelector('span').textContent=l;$('deadStats').appendChild(d)}
