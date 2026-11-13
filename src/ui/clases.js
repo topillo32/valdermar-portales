@@ -7,7 +7,7 @@ function buildClassPicker(){
     b.type='button';b.className='cls';b.dataset.k=k;b.setAttribute('role','radio');
     const cv2=document.createElement('canvas'),r=Math.max(1,window.devicePixelRatio||1);cv2.width=60*r;cv2.height=66*r;
     const c=cv2.getContext('2d');c.scale(r,r);drawHero(c,{cls:k,sx:30,sy:60,face:.8,walk:0,inv:0,swing:0,swingT:C.swing},0);
-    const nb=document.createElement('b');nb.textContent=C.title;const ns=document.createElement('span');ns.textContent=(i+1)+' · '+C.name;
+    const nb=document.createElement('b');nb.textContent=C.title;const ns=document.createElement('span');ns.innerHTML='<kbd></kbd>';ns.firstChild.textContent=(i+1)+' · ';ns.append(C.name);
     b.append(cv2,nb,ns);b.addEventListener('click',()=>selectClass(k));box.appendChild(b)});
 }
 function selectClass(k,focus){selCls=k;try{localStorage.setItem('varnhal-clase',k)}catch(e){}

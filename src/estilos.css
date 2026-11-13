@@ -232,7 +232,7 @@ body.touch #game{cursor:default}
   .inv{font-size:12px;gap:10px}
   .hud-tr{gap:5px}
   #mini{width:110px;height:70px}
-  #mini.big{width:min(360px,50vw);height:min(230px,60vh)}
+  #mini.big{height:max(90px,calc(100dvh - 215px));width:auto;aspect-ratio:300/192}
   .zone{font-size:12px}
   #insp,body.touch #insp{top:calc(env(safe-area-inset-top,0px) + 120px);bottom:auto;max-height:calc(100% - 140px);width:min(300px,45vw)}
   body.touch #log{bottom:calc(env(safe-area-inset-bottom,0px) + 10px);max-width:40vw}
@@ -244,3 +244,44 @@ body.touch #game{cursor:default}
   .card h1{font-size:clamp(30px,7vh,48px)}
   .card h1.logo{width:min(380px,100%)}
 }
+
+/* Pista de interacción: en táctil se puede tocar para usar */
+body.touch #hint{pointer-events:auto;cursor:pointer;padding:10px 16px;border-color:var(--ember)}
+
+/* Equipo: cabecera con pestañas y detalle como hoja inferior (solo en pantallas pequeñas) */
+.eq-top,.det-x{display:none}
+@media (max-width:700px),(max-height:500px) and (orientation:landscape){
+  #equip{padding-inline:0;background:#0c0a0f}
+  #equip .card{width:100%;margin:0 0 auto;padding:0 0 calc(env(safe-area-inset-bottom,0px) + 24px);gap:10px;align-content:start}
+  #equip h1{display:none}
+  .eq-top{display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:3;padding:calc(env(safe-area-inset-top,0px) + 8px) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));background:var(--panel-solid);border-bottom:1px solid var(--line)}
+  .eq-tabs{display:flex;flex:1;gap:4px}
+  .eq-tabs button{flex:1;min-height:42px;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:6px;font-family:var(--display);font-size:17px;color:var(--muted);cursor:pointer}
+  .eq-tabs button[aria-selected="true"]{color:var(--bone);border-color:var(--ember);background:rgba(229,138,60,.13)}
+  .eq-x{min-height:42px;padding:0 14px;background:linear-gradient(#a24f22,#6d2f13);border:1px solid var(--ember);border-radius:6px;color:#fff3e2;font-family:var(--display);font-size:17px;cursor:pointer}
+  .eq-grid{grid-template-columns:1fr;padding-inline:max(12px,env(safe-area-inset-left,0px)) max(12px,env(safe-area-inset-right,0px))}
+  #equip[data-tab="bag"] .eq-char{display:none}
+  #equip[data-tab="char"] .eq-bag{padding:0;border:0;background:none}
+  #equip[data-tab="char"] #bagHead,#equip[data-tab="char"] #bag,#equip[data-tab="char"] .detail:not(.open){display:none}
+  .eq-foot{display:none}
+  .bag{grid-template-columns:repeat(4,1fr);gap:8px}
+  .it canvas{width:44px;height:44px}
+  .detail:not(.open){min-height:0}
+  .detail.open{position:fixed;left:0;right:0;bottom:0;z-index:5;max-height:62dvh;overflow:auto;touch-action:pan-y;overscroll-behavior:contain;
+    padding:16px max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(16px,env(safe-area-inset-left,0px));
+    background:var(--panel-solid);border-top:1px solid var(--ember);border-radius:14px 14px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.7);animation:sheet .18s ease-out}
+  .detail.open h4{padding-right:44px}
+  .det-x{display:grid;place-items:center;position:absolute;top:10px;right:max(10px,env(safe-area-inset-right,0px));width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:16px;cursor:pointer}
+  .acts{position:sticky;bottom:calc(-16px - env(safe-area-inset-bottom,0px));margin:6px -2px 0;padding:8px 2px 2px;background:var(--panel-solid)}
+  .acts button{flex:1;min-height:46px;font-size:16px}
+}
+@media (max-height:500px) and (orientation:landscape){
+  .eq-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .bag{grid-template-columns:repeat(8,1fr)}
+  #equip[data-tab="bag"] .eq-char{display:none}
+  #equip[data-tab="bag"] .eq-bag{grid-column:1/-1}
+  #equip[data-tab="char"] .eq-char{grid-column:1/-1}
+  .detail.open{max-height:80dvh;left:auto;width:min(420px,60vw);border-radius:14px 0 0 0;border-left:1px solid var(--ember)}
+}
+@keyframes sheet{from{transform:translateY(30px);opacity:0}}
+@media (prefers-reduced-motion: reduce){.detail.open{animation:none}}
