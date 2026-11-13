@@ -40,7 +40,7 @@ function render(){
   };
   const ST=8; // altura del zócalo recortado
   for(const d of list){
-    if(d.kind==='wall'){const sx=isoX(d.x,d.y),sy=isoY(d.x,d.y),img=G.tiles.wall[d.o];
+    if(d.kind==='wall'){const sx=isoX(d.x,d.y),sy=isoY(d.x,d.y),img=G.tiles.wall[d.o===O_SECRET?4:d.o];
       if(isCut(d.x,d.y)){
         ctx.drawImage(img,0,WH-ST,TW,TH+ST,sx-HW,sy-ST,TW,TH+ST);
         diamond(ctx,sx-HW,sy-ST,TW,TH);ctx.fillStyle=G.theme.top;ctx.fill();
@@ -49,15 +49,17 @@ function render(){
         continue;}
       let a=1;if(d.k>pk+.3&&Math.abs(sx-P.sx)<TW*.9&&sy-WH<P.sy&&sy+TH>P.sy-52)a=.32;
       ctx.globalAlpha=a;ctx.drawImage(img,sx-HW,sy-WH);ctx.globalAlpha=1;
+      if(d.o===O_SECRET)drawSecretCrack(ctx,sx,sy,time);
       if(d.o===2)drawFlame(ctx,sx-HW/2,sy+HH/2-WH/2+HH-12,time,d.x*7+d.y);
       if(d.o===3)drawFlame(ctx,sx+HW/2,sy+HH/2-WH/2+HH-12,time,d.x*5+d.y*3);}
-    else if(d.kind==='obj'){const sx=isoX(d.x+.5,d.y+.5),sy=isoY(d.x+.5,d.y+.5);if(d.o===10)drawBarrel(ctx,sx,sy);else drawChest(ctx,sx,sy,d.o===12)}
+    else if(d.kind==='obj'){const sx=isoX(d.x+.5,d.y+.5),sy=isoY(d.x+.5,d.y+.5);if(d.o===10)drawBarrel(ctx,sx,sy);else if(d.o===O_MERCHANT)drawMerchant(ctx,sx,sy,time);else if(d.o===O_SEALED)drawSealedChest(ctx,sx,sy,time);else drawChest(ctx,sx,sy,d.o===12)}
     else if(d.kind==='item'&&d.it.type==='gear'){const it=d.it,g=it.item,sx=isoX(it.x,it.y),sy=isoY(it.x,it.y),b=Math.sin(it.bob)*2;
       if(g.rar>=1){const gr=ctx.createRadialGradient(sx,sy-8,0,sx,sy-8,18);gr.addColorStop(0,RCOL[g.rar]+'88');gr.addColorStop(1,RCOL[g.rar]+'00');ctx.fillStyle=gr;ctx.beginPath();ctx.arc(sx,sy-8,18,0,7);ctx.fill()}
       if(g.rar>=2){ctx.fillStyle=RCOL[g.rar]+'40';ctx.fillRect(sx-2,sy-70,4,62)}
       shadow(ctx,sx,sy,8);ctx.save();ctx.translate(sx-12,sy-22+b);drawItemIcon(ctx,g,24);ctx.restore()}
     else if(d.kind==='item'){const it=d.it,sx=isoX(it.x,it.y),sy=isoY(it.x,it.y),b=Math.sin(it.bob)*2;shadow(ctx,sx,sy,6);
-      if(it.type==='gold'){ctx.fillStyle='#a8822e';ctx.beginPath();ctx.ellipse(sx,sy-4+b,6,3,0,0,7);ctx.fill();ctx.fillStyle='#e9c66a';ctx.beginPath();ctx.ellipse(sx,sy-6+b,6,3,0,0,7);ctx.fill();ctx.fillStyle='#fff6d0';ctx.fillRect(sx-2,sy-7+b,2,1)}
+      if(it.type==='key')drawKeyItem(ctx,sx,sy,b);
+      else if(it.type==='gold'){ctx.fillStyle='#a8822e';ctx.beginPath();ctx.ellipse(sx,sy-4+b,6,3,0,0,7);ctx.fill();ctx.fillStyle='#e9c66a';ctx.beginPath();ctx.ellipse(sx,sy-6+b,6,3,0,0,7);ctx.fill();ctx.fillStyle='#fff6d0';ctx.fillRect(sx-2,sy-7+b,2,1)}
       else{ctx.fillStyle='#d9d2c4';ctx.fillRect(sx-1.5,sy-17+b,3,4);ctx.fillStyle='#b8283a';ctx.beginPath();ctx.arc(sx,sy-9+b,5,0,7);ctx.fill();ctx.fillStyle='rgba(255,255,255,.5)';ctx.fillRect(sx-3,sy-11+b,2,2)}}
     else if(d.kind==='corpse')drawCorpse(ctx,d.c,time);
     else if(d.kind==='enemy'&&d.e.t.boss)d.e.t.draw(ctx,d.e,time);
@@ -95,6 +97,8 @@ function render(){
     for(const e of G.enemies)if(e.t.boss){[lx,ly]=toL(e.sx,e.sy-50);hole(lx,ly,(e.mode==='breath'?260:190)*zoom*s,.8)}
     for(const k of G.corpses){[lx,ly]=toL(isoX(k.x,k.y),isoY(k.x,k.y)-20);hole(lx,ly,120*zoom*s,.6)}
     for(const p of G.pproj)if(p.kind==='fire'){[lx,ly]=toL(isoX(p.x,p.y),isoY(p.x,p.y)-20);hole(lx,ly,90*zoom*s,.9)}
+    if(G.merchant){const m=G.merchant;[lx,ly]=toL(isoX(m.x+.5,m.y+.5)+15,isoY(m.x+.5,m.y+.5)-20);hole(lx,ly,110*zoom*s,.85)}
+    if(G.secret&&G.secret.open){const q=G.secret,cx=q.x+Math.floor(q.w/2),cy=q.y+Math.floor(q.h/2);if(G.obj[idx(cx,cy)]===O_SEALED){[lx,ly]=toL(isoX(cx+.5,cy+.5),isoY(cx+.5,cy+.5)-12);hole(lx,ly,90*zoom*s,.7)}}
     {const st=G.stairs;[lx,ly]=toL(isoX(st.x+.5,st.y+.5),isoY(st.x+.5,st.y+.5));hole(lx,ly,70*zoom*s,.6)}
     ctx.globalCompositeOperation='lighter';
     for(const[sx,sy,f]of glows){const g=ctx.createRadialGradient(sx,sy,0,sx,sy,120*f);g.addColorStop(0,`rgba(${G.theme.light},.16)`);g.addColorStop(1,`rgba(${G.theme.light},0)`);ctx.fillStyle=g;ctx.beginPath();ctx.arc(sx,sy,120*f,0,7);ctx.fill()}
@@ -123,5 +127,6 @@ function drawMini(){
     mctx.fillStyle=G.floor[i]===255?'#9a90a6':G.obj[i]===13?'#e58a3c':'#5b5366';
     mctx.fillRect(px,py,Math.ceil(s*.6),Math.ceil(s*.35))}
   for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const i=idx(x,y);if(G.seen[i]&&G.obj[i]&&G.obj[i]<10){const[px,py]=P2(x,y);mctx.fillStyle='#b3a9c0';mctx.fillRect(px,py,Math.ceil(s*.6),Math.ceil(s*.35))}}
+  if(G.merchant&&G.seen[idx(G.merchant.x,G.merchant.y)]){const[mx,my]=P2(G.merchant.x,G.merchant.y);mctx.fillStyle='#c9a2ff';mctx.beginPath();mctx.arc(mx,my,3,0,7);mctx.fill()}
   const[px,py]=P2(P.x,P.y);mctx.fillStyle='#ffd36a';mctx.beginPath();mctx.arc(px,py,3.5,0,7);mctx.fill();
 }

@@ -1,6 +1,6 @@
 // ---------- Panel de equipo ----------
 const BAG_MAX=16;
-let eqSel=null; // {from:'bag'|'eq', id}
+let eqSel=null, eqSellAll=null, eqSellJunk=null; // {from:'bag'|'eq', id}
 function itemScore(it){if(!it)return 0;let s=0;if(it.min)s+=(it.min+it.max)/2*(it.spd||1)*3;if(it.def)s+=it.def*2;for(const a of it.aff)s+=a.k==='vida'?a.v*.5:a.k==='robo'?a.v*6:a.v*2;return s}
 function isUpgrade(it){return canUse(it,P.cls)&&itemScore(it)>itemScore(P.eq[it.slot])*1.05}
 function toggleEquip(){
@@ -50,6 +50,8 @@ function renderEquip(){
   $('bagHead').textContent='Mochila · '+P.bag.length+' / '+BAG_MAX;
   const bag=$('bag');bag.innerHTML='';
   for(let i=0;i<BAG_MAX;i++){const it=P.bag[i];bag.appendChild(itemCell(it,'bag',it&&isUpgrade(it)?'▲':''))}
+  if(!eqSellAll){eqSellAll=sellButton($('sellAll'),'Vender todo',()=>P.bag.slice(),renderEquip);eqSellJunk=sellButton($('sellJunk'),'Vender lo que no es mejora',junkItems,renderEquip)}
+  eqSellAll.refresh();eqSellJunk.refresh();
   // detalle
   $('eqTabChar').textContent=P.pts?'Personaje ●':'Personaje';
   const det=$('detail');det.innerHTML='';

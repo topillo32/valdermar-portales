@@ -56,6 +56,7 @@ function genLevel(d,s){
     for(let k=0;k<n;k++){const x=RI(rm.x,rm.x+rm.w-1)+.5,y=RI(rm.y,rm.y+rm.h-1)+.5;if(col[idx(Math.floor(x),Math.floor(y))])continue;
       const tk=pickType(d),T=ETYPES[tk],sc=1+.25*(d-1);
       L.enemies.push({t:T,x,y,r:T.r,hp:Math.round(T.hp*sc),maxhp:Math.round(T.hp*sc),dmg:Math.round(T.dmg*(1+.18*(d-1))),face:R()*6.28,walk:0,cd:R(),wind:0,flash:0,kx:0,ky:0,aggro:false,wander:0,wx:0,wy:0,sx:0,sy:0})}}
+  addExtras(L);
   buildCache(L);
   return L;
 }

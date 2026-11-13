@@ -285,3 +285,31 @@ body.touch #hint{pointer-events:auto;cursor:pointer;padding:10px 16px;border-col
 }
 @keyframes sheet{from{transform:translateY(30px);opacity:0}}
 @media (prefers-reduced-motion: reduce){.detail.open{animation:none}}
+
+/* ---------- Vender todo, mercader y cerradura ---------- */
+.inv .k b{color:#ffd36a}
+.sell-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.sell{background:var(--panel-solid);border:1px solid var(--line);border-radius:4px;padding:7px 12px;cursor:pointer;color:var(--bone);font-size:13px}
+.sell:hover:not(:disabled){border-color:rgba(216,178,92,.7)}
+.sell:disabled{opacity:.35;cursor:default}
+.sell.armed{border-color:var(--gold);color:var(--gold);background:rgba(216,178,92,.12)}
+#shop .card{width:min(620px,100%);text-align:left}
+#shop h1,#shop .sub{text-align:center}
+.shop-gold{text-align:center;font-size:16px;color:var(--muted)} .shop-gold b{color:var(--gold);font-size:20px}
+.shop-list{display:grid;gap:8px}
+.shop-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:rgba(0,0,0,.3)}
+.shop-row b{display:block;font-family:var(--display);font-weight:400;font-size:19px;color:var(--bone)}
+.shop-row small{display:block;font-size:13px;color:var(--muted);line-height:1.35}
+.shop-row small.why{color:#ff9a8a;margin-top:2px}
+.shop-row .buy{min-width:92px;min-height:40px;background:linear-gradient(#6b5420,#43330f);border:1px solid var(--gold);color:#fff3d0;border-radius:4px;padding:8px 12px;font-weight:700;cursor:pointer;font-variant-numeric:tabular-nums}
+.shop-row .buy:disabled{opacity:.35;cursor:default;filter:grayscale(.6)}
+#shop .sell-row{justify-content:center}
+.lock-info{display:flex;justify-content:center;gap:24px;font-size:16px;color:var(--bone);letter-spacing:.06em}
+.lock-bar{position:relative;height:44px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(#141018,#221a26);overflow:hidden;cursor:pointer;touch-action:none;transition:box-shadow .15s}
+.lock-bar .zone{position:absolute;top:0;bottom:0;background:linear-gradient(rgba(255,211,106,.55),rgba(216,160,60,.35));border-inline:2px solid #ffd36a}
+.lock-bar .needle{position:absolute;top:-2px;bottom:-2px;width:4px;margin-left:-2px;background:#f3ead8;box-shadow:0 0 8px #fff}
+.lock-bar.good{box-shadow:0 0 0 2px #7fe08a,0 0 18px rgba(127,224,138,.6)}
+.lock-bar.bad{box-shadow:0 0 0 2px #ff6a5a,0 0 18px rgba(255,106,90,.6);animation:lockShake .3s}
+@keyframes lockShake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#lock .note.ok{color:#ffd36a}
+@media (max-width:520px){.shop-row{grid-template-columns:1fr}.shop-row .buy{width:100%}.sell-row{justify-content:stretch}.sell{flex:1}}

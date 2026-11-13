@@ -57,6 +57,8 @@ function update(dt){
     if(it.type==='gear'){if(P.bag.length>=BAG_MAX){if(time-(P.fullMsg||-9)>4){P.fullMsg=time;msg('La mochila está llena. Pulsa B para vender objetos.','#ff9a8a')}continue}
       P.bag.push(it.item);sfx('coin');msg('Recoges: '+it.item.name+(canUse(it.item,P.cls)?'':' (no es para tu clase)'),RCOL[it.item.rar]);
       if(isUpgrade(it.item))addText(P.x,P.y,'▲ Mejora','#7fe08a',15)}
+    else if(it.type==='key'){P.keys=(P.keys||0)+1;addText(it.x,it.y,'+1 llave','#ffd36a',15);sfx('chest');
+      msg(G.secret&&!G.secret.open?'Encuentras una llave antigua. Algún muro agrietado de este piso suena hueco...':'Encuentras una llave antigua. Guárdala: abre las grietas que esconden salas secretas.','#ffd36a')}
     else if(it.type==='gold'){P.gold+=it.n;addText(it.x,it.y,'+'+it.n+' oro','#d8b25c',14);sfx('coin')}
     else{if(P.pot>=9)continue;P.pot++;addText(it.x,it.y,'+1 poción','#e08080',14);sfx('coin')}
     G.items.splice(G.items.indexOf(it),1)}}
@@ -66,7 +68,7 @@ function update(dt){
   const tx=isoX(P.x,P.y),ty=isoY(P.x,P.y)-14;const k=1-Math.pow(.0005,dt);cam.x+=(tx-cam.x)*k;cam.y+=(ty-cam.y)*k;
   shake=Math.max(0,shake-dt*25);
   const near=nearInteract(),hint=$('hint');
-  if(near){hint.hidden=false;hint.innerHTML=(document.body.classList.contains('touch')?'<kbd>Usar</kbd> · ':'<kbd>E</kbd> · ')+(near.o===11?'Abrir cofre':'Bajar a la profundidad '+(depth+1))}else hint.hidden=true;
+  if(near){hint.hidden=false;hint.innerHTML=(document.body.classList.contains('touch')?'<kbd>Usar</kbd> · ':'<kbd>E</kbd> · ')+hintFor(near)}else hint.hidden=true;
   hudT-=dt;if(hudT<=0){hudT=.1;updHud()}
   inspT-=dt;if(inspT<=0){inspT=.15;updInspectorCell()}
 }

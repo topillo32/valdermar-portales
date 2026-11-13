@@ -23,7 +23,7 @@
   <div class="hero-line"><span id="heroName">Aldric</span><small id="lvl">Nivel 1</small></div>
   <div class="bar hp"><i id="hpFill"></i><span id="hpTxt">100 / 100</span></div>
   <div class="bar xp" title="Experiencia"><i id="xpFill"></i></div>
-  <div class="inv"><span class="g">Oro <b id="gold">0</b></span><span>Pociones <b id="pots">2</b></span><span>Daño <b id="atk">10–16</b></span></div>
+  <div class="inv"><span class="g">Oro <b id="gold">0</b></span><span>Pociones <b id="pots">2</b></span><span class="k" id="keysWrap" hidden>Llaves <b id="keys">0</b></span><span>Daño <b id="atk">10–16</b></span></div>
 </div>
 
 <div class="hud-tr">
@@ -131,10 +131,37 @@
       <div class="eq-box eq-bag">
         <h3 id="bagHead">Mochila</h3>
         <div class="bag" id="bag"></div>
+        <div class="sell-row"><button type="button" class="sell" id="sellJunk">Vender lo que no es mejora</button><button type="button" class="sell" id="sellAll">Vender todo</button></div>
         <div class="detail" id="detail"></div>
       </div>
     </div>
     <div class="eq-foot"><span>Toca un objeto para ver sus estadísticas y compararlo con lo que llevas.</span><button class="cta" id="eqClose">Volver al juego<kbd> (B)</kbd></button></div>
+  </div>
+</div>
+
+<div class="overlay" id="shop" hidden>
+  <div class="card">
+    <h1>El mercader</h1>
+    <p class="sub">Un viajero encapuchado con una mochila enorme. Acepta oro y no hace preguntas.</p>
+    <div class="shop-gold">Tu oro: <b id="shopGold">0</b></div>
+    <div class="shop-list" id="shopList"></div>
+    <div class="sell-row"><button type="button" class="sell" id="shopSellJunk">Vender lo que no es mejora</button><button type="button" class="sell" id="shopSellAll">Vender toda la mochila</button></div>
+    <p class="note" id="shopNote" aria-live="polite"></p>
+    <div class="menu-row"><button class="cta" id="shopClose" type="button">Seguir explorando<kbd> (Esc)</kbd></button></div>
+  </div>
+</div>
+
+<div class="overlay" id="lock" hidden>
+  <div class="card">
+    <h1>Cofre sellado</h1>
+    <p class="sub">Detén la aguja dentro de la zona dorada para levantar cada pasador. Cada uno es más difícil. Si fallas, se rompe una ganzúa. Tres pasadores dan un objeto legendario.</p>
+    <div class="lock-info"><span id="lockPins"></span><span id="lockPicks"></span></div>
+    <div class="lock-bar" id="lockBar"><i class="zone" id="lockZone"></i><i class="needle" id="lockNeedle"></i></div>
+    <div class="menu-row">
+      <button class="cta" id="lockGo" type="button">¡Ahora!<kbd> (Espacio)</kbd></button>
+      <button class="cta" id="lockTake" type="button" hidden>Recoger el botín</button>
+    </div>
+    <p class="note" id="lockResult" aria-live="polite"></p>
   </div>
 </div>
 

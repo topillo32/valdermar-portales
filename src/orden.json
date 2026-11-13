@@ -25,6 +25,7 @@
   "servicios/guardado.js",
   "ui/menus.js",
   "ui/equipo.js",
+  "juego/tesoros.js",
   "ui/clases.js",
   "arranque.js"
 ]

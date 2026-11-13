@@ -13,7 +13,7 @@ const Store={
     if(this.cloud()){await FB.submitScore(s);return 'nube'}return 'local'},
   async scores(){if(window.FB&&fbState==='ready')return {rows:await FB.topScores(),global:true};return {rows:this.localScores(),global:false}},
 };
-function makeSave(){return JSON.parse(JSON.stringify({v:1,depth,seed,kills,at:Date.now(),P:{cls:P.cls,hp:Math.ceil(P.hp),lvl:P.lvl,xp:P.xp,gold:P.gold,pot:P.pot,eq:P.eq,bag:P.bag,alloc:P.alloc,pts:P.pts}}))}
+function makeSave(){return JSON.parse(JSON.stringify({v:1,depth,seed,kills,at:Date.now(),P:{cls:P.cls,hp:Math.ceil(P.hp),lvl:P.lvl,xp:P.xp,gold:P.gold,pot:P.pot,keys:P.keys||0,eq:P.eq,bag:P.bag,alloc:P.alloc,pts:P.pts}}))}
 function saveGame(){return Store.save(makeSave())}
 function applySave(data){
   depth=data.depth;seed=data.seed;kills=data.kills||0;

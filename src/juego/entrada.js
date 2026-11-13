@@ -12,6 +12,7 @@ window.addEventListener('keydown',e=>{
     if(e.code==='ArrowRight'||e.code==='ArrowLeft'){const i=CLS_KEYS.indexOf(selCls)+(e.code==='ArrowRight'?1:-1);selectClass(CLS_KEYS[(i+CLS_KEYS.length)%CLS_KEYS.length],true);e.preventDefault();return}
     if(e.code==='Enter'||e.code==='Space'){if(e.target&&e.target.classList&&e.target.classList.contains('cls')&&e.code==='Space')return;e.preventDefault();startGame();return}
     return}
+  if(state==='shop'||state==='lock'){extraKey(e);return}
   if(state==='inv'){if(e.code==='KeyB'||e.code==='Escape'){e.preventDefault();toggleEquip()}return}
   if(state!=='play')return;
   if(e.code==='KeyB'){toggleEquip();return}

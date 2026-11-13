@@ -2,7 +2,8 @@
 function rollDmg(){const C=CLS();let dmg=RI(P.atkMin,P.atkMax),crit=R()<P.stats.crit;if(crit)dmg=Math.round(dmg*C.critM);return[dmg,crit]}
 function breakBarrel(x,y){const i=idx(x,y);if(G.obj[i]!==10)return;
   G.obj[i]=0;G.col[i]=0;burst(x+.5,y+.5,'#7a5230',14,2.5);sfx('hit');
-  if(R()<.45)G.items.push({x:x+.5,y:y+.5,type:'gold',n:RI(3,8)*depth,bob:R()*6});else if(R()<.15)G.items.push({x:x+.5,y:y+.5,type:'potion',bob:R()*6})}
+  if(R()<.45)G.items.push({x:x+.5,y:y+.5,type:'gold',n:RI(3,8)*depth,bob:R()*6});else if(R()<.15)G.items.push({x:x+.5,y:y+.5,type:'potion',bob:R()*6});
+  if(G.secret&&!G.secret.open&&!P.keys&&R()<.06)G.items.push({x:x+.4,y:y+.6,type:'key',bob:R()*6})}
 function playerAttack(aim){
   if(state!=='play'||P.cd>0)return;
   const C=CLS();
@@ -55,6 +56,7 @@ function hurtEnemy(e,dmg,nx,ny,crit,stun){
     if(R()<(e.t===ETYPES.bruto?.4:.13))dropItem(e.x-.2,e.y+.2,genItem(depth,{boost:e.t===ETYPES.bruto?.08:0}));
     if(R()<.4)G.items.push({x:e.x,y:e.y,type:'gold',n:RI(2,6)*depth+RI(0,4),bob:R()*6});
     if(R()<.13)G.items.push({x:e.x+.2,y:e.y-.2,type:'potion',bob:R()*6});
+    if(G.secret&&!G.secret.open&&!P.keys&&R()<.04)G.items.push({x:e.x-.2,y:e.y-.2,type:'key',bob:R()*6});
   }
 }
 function gainXp(n){P.xp+=n;while(P.xp>=xpNext(P.lvl)){P.xp-=xpNext(P.lvl);P.lvl++;P.pts+=3;computeStats();P.hp=P.maxhp;
@@ -74,7 +76,7 @@ function drinkPotion(){
 }
 function nearInteract(){
   let best=null,bd=1.6;const px=Math.floor(P.x),py=Math.floor(P.y);
-  for(let y=py-2;y<=py+2;y++)for(let x=px-2;x<=px+2;x++){if(x<0||y<0||x>=MW||y>=MH)continue;const o=G.obj[idx(x,y)];if(o!==11&&o!==13)continue;
+  for(let y=py-2;y<=py+2;y++)for(let x=px-2;x<=px+2;x++){if(x<0||y<0||x>=MW||y>=MH)continue;const o=G.obj[idx(x,y)];if(!INTERACT_OBJ.includes(o))continue;
     const d=Math.hypot(x+.5-P.x,y+.5-P.y);if(d<bd){bd=d;best={x,y,o}}}
   return best;
 }
@@ -86,6 +88,9 @@ function interact(){
     if(r>.45){P.pot=Math.min(9,P.pot+1);msg('Dentro hay una poción.','#e08080')}
     burst(n.x+.5,n.y+.5,'#ffd36a',14,2)}
   else if(n.o===13)descend();
+  else if(n.o===O_SECRET)useKey(n);
+  else if(n.o===O_MERCHANT)openShop();
+  else if(n.o===O_SEALED)openLock(n);
 }
 function descend(){
   depth++;seed=(Math.random()*1e9)|0;sfx('stairs');

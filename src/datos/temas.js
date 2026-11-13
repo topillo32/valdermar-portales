@@ -6,5 +6,5 @@ const THEMES=[
  {name:'Fosa de Brasas',      floor:['#503632','#452d29','#5b3e37'], mortar:'#211312', top:'#6c453c', left:'#442a20', right:'#351f18', brick:'#1d0f0c', moss:'#8a3f1c', fog:'13,4,2',  light:'255,146,86'},
 ];
 const FLOOR_NAMES=['Losas','Losas agrietadas','Losas con musgo','Losa grande','Escombros','Rejilla'];
-const OBJ_NAMES={0:'—',1:'Muro',2:'Muro con antorcha (cara izq.)',3:'Muro con antorcha (cara der.)',4:'Muro agrietado',10:'Barril',11:'Cofre',12:'Cofre abierto',13:'Escaleras'};
+const OBJ_NAMES={0:'—',1:'Muro',2:'Muro con antorcha (cara izq.)',3:'Muro con antorcha (cara der.)',4:'Muro agrietado',10:'Barril',11:'Cofre',12:'Cofre abierto',13:'Escaleras',5:'Muro agrietado (oculta una sala secreta)',14:'Mercader',16:'Cofre sellado'};
 const DECOR_NAMES={0:'—',1:'Huesos',2:'Charco'};
